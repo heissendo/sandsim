@@ -29,12 +29,14 @@ class MainWindow : public QMainWindow
         std::unordered_set<coordinates> occupied;
         std::mt19937                    rng{std::random_device{}()};
         void                            moveCursor();
+        void                            step();
 
         int         windowHeight  = 600;
         int         windowWidth   = 800;
         int         gridWidth     = windowWidth / cellSize;
         int         gridHeight    = windowHeight / cellSize;
-        int         spawnInterval = 6;
+        int         spawnInterval = 1;
+        int         stepsPerFrame = 4;
         int         tickCount     = 0;
         coordinates cursorPos     = {gridWidth / 2, 0};
         bool        leftPressed   = false;

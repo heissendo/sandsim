@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <functional>
 
-constexpr int cellSize = 5;
+constexpr int cellSize = 3;
 
 struct coordinates
 {

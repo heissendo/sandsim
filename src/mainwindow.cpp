@@ -27,11 +27,19 @@ void MainWindow::updateGame()
 {
     moveCursor();
 
+    for (int i = 0; i < stepsPerFrame; i++)
+    {
+        step();
+    }
+
+    update();
+}
+
+void MainWindow::step()
+{
     if (tickCount++ % spawnInterval == 0)
     {
         const coordinates spawn{cursorPos.x, 0};
-        std::cout << "Spawn: (" << spawn.x << ", " << spawn.y << ")"
-                  << std::endl;
 
         if (!occupied.contains(spawn))
         {
@@ -56,8 +64,6 @@ void MainWindow::updateGame()
             occupied.insert(to);
         }
     }
-
-    update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
