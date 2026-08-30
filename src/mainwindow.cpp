@@ -1,5 +1,7 @@
 
 #include "mainwindow.h"
+#include <QKeyEvent>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -23,9 +25,13 @@ void MainWindow::paintEvent(QPaintEvent* event)
 
 void MainWindow::updateGame()
 {
+    moveCursor();
+
     if (tickCount++ % spawnInterval == 0)
     {
-        const coordinates spawn{gridWidth / 2, 0};
+        const coordinates spawn{cursorPos.x, 0};
+        std::cout << "Spawn: (" << spawn.x << ", " << spawn.y << ")"
+                  << std::endl;
 
         if (!occupied.contains(spawn))
         {
@@ -52,4 +58,32 @@ void MainWindow::updateGame()
     }
 
     update();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Left)
+        leftPressed = true;
+    if (event->key() == Qt::Key_Right)
+        rightPressed = true;
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Left)
+        leftPressed = false;
+    if (event->key() == Qt::Key_Right)
+        rightPressed = false;
+}
+
+void ::MainWindow::moveCursor()
+{
+    if (leftPressed && cursorPos.x > 0)
+    {
+        cursorPos.x--;
+    }
+    if (rightPressed && cursorPos.x < gridWidth - 1)
+    {
+        cursorPos.x++;
+    }
 }

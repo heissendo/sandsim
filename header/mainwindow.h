@@ -20,19 +20,25 @@ class MainWindow : public QMainWindow
 
     protected:
         void paintEvent(QPaintEvent* event) override;
+        void keyPressEvent(QKeyEvent* event) override;
+        void keyReleaseEvent(QKeyEvent* event) override;
 
     private:
         QTimer*                         timer;
         std::vector<Ball>               particles;
         std::unordered_set<coordinates> occupied;
         std::mt19937                    rng{std::random_device{}()};
+        void                            moveCursor();
 
-        int windowHeight  = 600;
-        int windowWidth   = 800;
-        int gridWidth     = windowWidth / cellSize;
-        int gridHeight    = windowHeight / cellSize;
-        int spawnInterval = 6;
-        int tickCount     = 0;
+        int         windowHeight  = 600;
+        int         windowWidth   = 800;
+        int         gridWidth     = windowWidth / cellSize;
+        int         gridHeight    = windowHeight / cellSize;
+        int         spawnInterval = 6;
+        int         tickCount     = 0;
+        coordinates cursorPos     = {gridWidth / 2, 0};
+        bool        leftPressed   = false;
+        bool        rightPressed  = false;
 
     private slots:
         void updateGame();
