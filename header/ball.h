@@ -1,23 +1,27 @@
 #ifndef BALL_H
 #define BALL_H
+#include "coordinates.h"
 #include <QPainter>
-#include <stdlib.h>
-#include <time.h>
+#include <random>
+#include <unordered_set>
 
 class Ball
 {
     public:
-        Ball(int x, int y, int radius, int speedx, int speedy, int windowWidth,
-             int windowHeight);
-        void   draw(QPainter& painter) const;
-        QRectF getRect() const;
-        void   move();
-        bool   hitWall();
-        bool   hitBottom();
+        Ball(coordinates cell);
+        void        draw(QPainter& painter) const;
+        QRectF      getRect() const;
+        void        move(const std::unordered_set<coordinates>& occupied,
+                         int gridWidth, int gridHeight, std::mt19937& rng);
+        coordinates getCell() const;
+        bool        isSettled() const;
 
     private:
-        int  x, y, radius, speedx, speedy, windowWidth, windowHeight;
-        bool dirLeft = true;
+        bool isFree(const std::unordered_set<coordinates>& occupied,
+                    coordinates c, int gridWidth, int gridHeight) const;
+
+        coordinates cell;
+        bool        settled = false;
 };
 
 #endif // BALL_H
