@@ -3,13 +3,15 @@
 #include <cstdlib>
 #include <iostream>
 
-Ball::Ball(float x, float y, float radius, float speedx, float speedy, float windowWidth, float windowHeight)
-: x(x), y(y), radius(radius), speedx(speedx), speedy(speedy), windowWidth(windowWidth), windowHeight(windowHeight)
+Ball::Ball(int x, int y, int radius, int speedx, int speedy, int windowWidth,
+           int windowHeight)
+    : x(x), y(y), radius(radius), speedx(speedx), speedy(speedy),
+      windowWidth(windowWidth), windowHeight(windowHeight)
 {
     srand(time(NULL));
 }
 
-void Ball::draw(QPainter &painter) const
+void Ball::draw(QPainter& painter) const
 {
     painter.setBrush((Qt::red));
     painter.drawRect(getRect());
@@ -17,40 +19,24 @@ void Ball::draw(QPainter &painter) const
 
 QRectF Ball::getRect() const
 {
-    return QRectF(x,y,radius,radius);
+    return QRectF(x, y, radius, radius);
 }
 
 void Ball::move()
 {
-    x += speedx;
+    if (hitBottom())
+    {
+        return;
+    }
     y += speedy;
 }
 
-void Ball::hitPaddle(Paddle &paddle)
+bool Ball::hitBottom()
 {
-    if (getRect().intersects(paddle.getRect())){
-        speedx = -speedx * 1.02;
-
-        int direction = rand() % 2;  // 0 or 1
-        if (direction == 0) {
-            direction = -1;  // Move up
-        } else {
-            direction = 1;  // Move down
-        }
-
-        int speed = rand() % 3 + 1;  // Random value between 1 and 3
-
-        speedy = direction * speed;  // Final vertical speed
-    }
-
-
+    return (y == windowHeight - radius) ? true : false;
 }
 
-void Ball::hitWall()
+bool Ball::hitWall()
 {
-    if (y < 0 || y > windowHeight - radius) {
-        speedy = -speedy;
-    }
-
+    return (x <= 0 || x + radius >= windowWidth) ? true : false;
 }
-

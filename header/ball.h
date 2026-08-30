@@ -3,21 +3,21 @@
 #include <QPainter>
 #include <stdlib.h>
 #include <time.h>
-#include "paddle.h"
 
 class Ball
 {
-public:
-    Ball(float x, float y, float radius, float speedx, float speedy, float windowWidth, float windowHeight);
-    void draw(QPainter &painter) const;
-    QRectF getRect() const;
-    void move();
-    void hitPaddle(Paddle &paddle);
-    void hitWall();
+    public:
+        Ball(int x, int y, int radius, int speedx, int speedy, int windowWidth,
+             int windowHeight);
+        void   draw(QPainter& painter) const;
+        QRectF getRect() const;
+        void   move();
+        bool   hitWall();
+        bool   hitBottom();
 
-private:
-    float x, y, radius, speedx, speedy, windowWidth, windowHeight;
-    bool dirLeft = true;
+    private:
+        int  x, y, radius, speedx, speedy, windowWidth, windowHeight;
+        bool dirLeft = true;
 };
 
 #endif // BALL_H

@@ -13,12 +13,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# Path to your Qt installation
-set(CMAKE_PREFIX_PATH "~/Qt/6.8.1/gcc_64")
-
-
 # Find packages package
-find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 # Collect source and header files
 file(GLOB_RECURSE SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
@@ -37,7 +33,7 @@ target_include_directories(pingpong
 )
 
 # Link libraries 
-target_link_libraries(pingpong PRIVATE Qt6::Widgets Qt6::WebEngineWidgets)
+target_link_libraries(pingpong PRIVATE Qt6::Widgets)
 
 # Set the output directory for the compiled binary
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
