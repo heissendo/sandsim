@@ -52,6 +52,10 @@ void MainWindow::step()
     {
         if (particle.isSettled())
         {
+            if (!particle.isColorSet())
+            {
+                particle.setColor(particles.size());
+            }
             continue;
         }
         const coordinates from = particle.getCell();

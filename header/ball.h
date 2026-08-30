@@ -15,13 +15,17 @@ class Ball
                          int gridWidth, int gridHeight, std::mt19937& rng);
         coordinates getCell() const;
         bool        isSettled() const;
+        bool        isColorSet() const;
+        void        setColor(int particlesCount);
 
     private:
         bool isFree(const std::unordered_set<coordinates>& occupied,
                     coordinates c, int gridWidth, int gridHeight) const;
 
         coordinates cell;
-        bool        settled = false;
+        bool        settled  = false;
+        bool        colorSet = false;
+        QColor      color    = Qt::red;
 };
 
 #endif // BALL_H

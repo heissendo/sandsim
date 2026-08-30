@@ -1,4 +1,5 @@
 #include "ball.h"
+#include <iostream>
 
 Ball::Ball(coordinates cell) : cell(cell)
 {
@@ -6,7 +7,8 @@ Ball::Ball(coordinates cell) : cell(cell)
 
 void Ball::draw(QPainter& painter) const
 {
-    painter.setBrush((Qt::red));
+
+    painter.setBrush((color));
     painter.drawRect(getRect());
 }
 
@@ -72,4 +74,21 @@ coordinates Ball::getCell() const
 bool Ball::isSettled() const
 {
     return settled;
+}
+
+void Ball::setColor(int particlesCount)
+{
+    int r = cell.x;
+    (r > 255) ? r = 255 : r = cell.x;
+    int g = cell.y;
+    int b = particlesCount / 256;
+    (b > 255) ? b = 255 : b = particlesCount / 256;
+
+    color    = QColor(r, g, b);
+    colorSet = true;
+}
+
+bool Ball::isColorSet() const
+{
+    return colorSet;
 }
