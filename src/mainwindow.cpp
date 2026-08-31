@@ -19,12 +19,29 @@ MainWindow::~MainWindow() = default;
 
 void MainWindow::paintEvent(QPaintEvent* event)
 {
-    QPainter painter(this);
-    painter.drawPixmap(0, 0, settledLayer);
+    // Stamp newly stopped grains into the offscreen image, not the screen.
+    {
+        QPainter layerPainter(&settledLayer);
+        for (const Ball& particle : particles)
+        {
+            if (particle.isSettled())
+            {
+                particle.draw(layerPainter);
+            }
+        }
+    }
 
+    // They are pixels now, so stop simulating them.
+    std::erase_if(particles, [](const Ball& b) { return b.isSettled(); });
+
+    // One blit draws the whole pile, however many grains it holds.
+    QPainter widgetPainter(this);
+    widgetPainter.drawPixmap(0, 0, settledLayer);
+
+    // Falling grains move every frame, so they are redrawn on top instead.
     for (const Ball& particle : particles)
     {
-        particle.draw(painter);
+        particle.draw(widgetPainter);
     }
 }
 
@@ -35,16 +52,6 @@ void MainWindow::updateGame()
     for (int i = 0; i < stepsPerFrame; i++)
     {
         step();
-    }
-
-    if (!justSettled.empty())
-    {
-        QPainter painter(&settledLayer);
-        for (const Ball& particle : justSettled)
-        {
-            particle.draw(painter);
-        }
-        justSettled.clear();
     }
 
     update();
@@ -75,15 +82,12 @@ void MainWindow::step()
             grid.setCell(to, Cell::Falling);
         }
 
-        if (particle.isSettled())
+        if (particle.isSettled() && !particle.isColorSet())
         {
             grid.setCell(to, Cell::Settled);
             particle.setColor(settledCount++);
-            justSettled.push_back(particle);
         }
     }
-
-    std::erase_if(particles, [](const Ball& b) { return b.isSettled(); });
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)

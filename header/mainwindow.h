@@ -27,7 +27,6 @@ class MainWindow : public QMainWindow
     private:
         QTimer*           timer;
         std::vector<Ball> particles;
-        std::vector<Ball> justSettled;
         std::mt19937      rng{std::random_device{}()};
         QPixmap           settledLayer;
         void              moveCursor();

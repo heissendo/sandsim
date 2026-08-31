@@ -29,6 +29,11 @@ bool Ball::isSolid(const Grid& grid, coordinates c) const
 
 void Ball::move(const Grid& grid, std::mt19937& rng)
 {
+    if (settled)
+    {
+        return;
+    }
+
     const coordinates below{cell.x, cell.y + 1};
     const coordinates downLeft{cell.x - 1, cell.y + 1};
     const coordinates downRight{cell.x + 1, cell.y + 1};
