@@ -3,11 +3,12 @@
 
 #include "ball.h"
 #include "coordinates.h"
+#include "grid.h"
 #include <QMainWindow>
 #include <QPainter>
+#include <QPixmap>
 #include <QTimer>
 #include <random>
-#include <unordered_set>
 #include <vector>
 
 class MainWindow : public QMainWindow
@@ -24,12 +25,13 @@ class MainWindow : public QMainWindow
         void keyReleaseEvent(QKeyEvent* event) override;
 
     private:
-        QTimer*                         timer;
-        std::vector<Ball>               particles;
-        std::unordered_set<coordinates> occupied;
-        std::mt19937                    rng{std::random_device{}()};
-        void                            moveCursor();
-        void                            step();
+        QTimer*           timer;
+        std::vector<Ball> particles;
+        std::vector<Ball> justSettled;
+        std::mt19937      rng{std::random_device{}()};
+        QPixmap           settledLayer;
+        void              moveCursor();
+        void              step();
 
         int         windowHeight  = 600;
         int         windowWidth   = 800;
@@ -38,9 +40,11 @@ class MainWindow : public QMainWindow
         int         spawnInterval = 1;
         int         stepsPerFrame = 4;
         int         tickCount     = 0;
+        int         settledCount  = 0;
         coordinates cursorPos     = {gridWidth / 2, 0};
         bool        leftPressed   = false;
         bool        rightPressed  = false;
+        Grid        grid{gridWidth, gridHeight};
 
     private slots:
         void updateGame();

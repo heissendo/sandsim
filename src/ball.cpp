@@ -17,37 +17,34 @@ QRectF Ball::getRect() const
     return QRectF(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize);
 }
 
-bool Ball::isFree(const std::unordered_set<coordinates>& occupied,
-                  coordinates c, int gridWidth, int gridHeight) const
+bool Ball::isFree(const Grid& grid, coordinates c) const
 {
-    if (c.x < 0 || c.x >= gridWidth || c.y < 0 || c.y >= gridHeight)
-    {
-        return false;
-    }
-
-    return !occupied.contains(c);
+    return grid.inBounds(c) && grid.getCell(c) == Cell::Empty;
 }
 
-void Ball::move(const std::unordered_set<coordinates>& occupied, int gridWidth,
-                int gridHeight, std::mt19937& rng)
+bool Ball::isSolid(const Grid& grid, coordinates c) const
+{
+    return !grid.inBounds(c) || grid.getCell(c) == Cell::Settled;
+}
+
+void Ball::move(const Grid& grid, std::mt19937& rng)
 {
     const coordinates below{cell.x, cell.y + 1};
     const coordinates downLeft{cell.x - 1, cell.y + 1};
     const coordinates downRight{cell.x + 1, cell.y + 1};
 
-    if (isFree(occupied, below, gridWidth, gridHeight))
+    if (isFree(grid, below))
     {
-        cell    = below;
-        settled = false;
+        cell = below;
         return;
     }
 
-    const bool leftFree  = isFree(occupied, downLeft, gridWidth, gridHeight);
-    const bool rightFree = isFree(occupied, downRight, gridWidth, gridHeight);
+    const bool leftFree  = isFree(grid, downLeft);
+    const bool rightFree = isFree(grid, downRight);
 
     if (leftFree && rightFree)
     {
-        cell = std::bernoulli_distribution(0.5)(rng) ? downLeft : downRight;
+        cell = (rng() & 1) ? downLeft : downRight;
     }
     else if (leftFree)
     {
@@ -57,13 +54,11 @@ void Ball::move(const std::unordered_set<coordinates>& occupied, int gridWidth,
     {
         cell = downRight;
     }
-    else
+    else if (isSolid(grid, below) && isSolid(grid, downLeft) &&
+             isSolid(grid, downRight))
     {
         settled = true;
-        return;
     }
-
-    settled = false;
 }
 
 coordinates Ball::getCell() const

@@ -1,9 +1,9 @@
 #ifndef BALL_H
 #define BALL_H
 #include "coordinates.h"
+#include "grid.h"
 #include <QPainter>
 #include <random>
-#include <unordered_set>
 
 class Ball
 {
@@ -11,16 +11,15 @@ class Ball
         Ball(coordinates cell);
         void        draw(QPainter& painter) const;
         QRectF      getRect() const;
-        void        move(const std::unordered_set<coordinates>& occupied,
-                         int gridWidth, int gridHeight, std::mt19937& rng);
+        void        move(const Grid& grid, std::mt19937& rng);
         coordinates getCell() const;
         bool        isSettled() const;
         bool        isColorSet() const;
         void        setColor(int particlesCount);
 
     private:
-        bool isFree(const std::unordered_set<coordinates>& occupied,
-                    coordinates c, int gridWidth, int gridHeight) const;
+        bool isFree(const Grid& grid, coordinates c) const;
+        bool isSolid(const Grid& grid, coordinates c) const;
 
         coordinates cell;
         bool        settled  = false;

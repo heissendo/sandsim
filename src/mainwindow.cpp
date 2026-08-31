@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
     setFixedSize(windowWidth, windowHeight);
 
+    settledLayer = QPixmap(windowWidth, windowHeight);
+    settledLayer.fill(palette().color(QPalette::Window));
+
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::updateGame);
     timer->start(16);
@@ -17,6 +20,8 @@ MainWindow::~MainWindow() = default;
 void MainWindow::paintEvent(QPaintEvent* event)
 {
     QPainter painter(this);
+    painter.drawPixmap(0, 0, settledLayer);
+
     for (const Ball& particle : particles)
     {
         particle.draw(painter);
@@ -32,6 +37,16 @@ void MainWindow::updateGame()
         step();
     }
 
+    if (!justSettled.empty())
+    {
+        QPainter painter(&settledLayer);
+        for (const Ball& particle : justSettled)
+        {
+            particle.draw(painter);
+        }
+        justSettled.clear();
+    }
+
     update();
 }
 
@@ -41,33 +56,34 @@ void MainWindow::step()
     {
         const coordinates spawn{cursorPos.x, 0};
 
-        if (!occupied.contains(spawn))
+        if (grid.getCell(spawn) == Cell::Empty)
         {
             particles.emplace_back(spawn);
-            occupied.insert(spawn);
+            grid.setCell(spawn, Cell::Falling);
         }
     }
 
     for (Ball& particle : particles)
     {
-        if (particle.isSettled())
-        {
-            if (!particle.isColorSet())
-            {
-                particle.setColor(particles.size());
-            }
-            continue;
-        }
         const coordinates from = particle.getCell();
-        particle.move(occupied, gridWidth, gridHeight, rng);
+        particle.move(grid, rng);
         const coordinates to = particle.getCell();
 
         if (!(from == to))
         {
-            occupied.erase(from);
-            occupied.insert(to);
+            grid.setCell(from, Cell::Empty);
+            grid.setCell(to, Cell::Falling);
+        }
+
+        if (particle.isSettled())
+        {
+            grid.setCell(to, Cell::Settled);
+            particle.setColor(settledCount++);
+            justSettled.push_back(particle);
         }
     }
+
+    std::erase_if(particles, [](const Ball& b) { return b.isSettled(); });
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
