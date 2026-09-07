@@ -43,6 +43,8 @@ class MainWindow : public QMainWindow
         coordinates cursorPos     = {gridWidth / 2, 0};
         bool        leftPressed   = false;
         bool        rightPressed  = false;
+        bool        downPressed   = false;
+        bool        upPressed     = false;
         Grid        grid{gridWidth, gridHeight};
 
     private slots:

@@ -3,12 +3,18 @@
 #include <QKeyEvent>
 #include <iostream>
 
-MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
+MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent), grid(gridWidth, gridHeight)
 {
     setFixedSize(windowWidth, windowHeight);
 
     settledLayer = QPixmap(windowWidth, windowHeight);
     settledLayer.fill(palette().color(QPalette::Window));
+
+    for (int i = 0; i < gridWidth / 2; i++)
+    {
+        grid.setCell({i, gridHeight / 2}, Cell::Settled);
+    }
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::updateGame);
@@ -31,18 +37,23 @@ void MainWindow::paintEvent(QPaintEvent* event)
         }
     }
 
-    // They are pixels now, so stop simulating them.
+    // stop simulating them.
     std::erase_if(particles, [](const Ball& b) { return b.isSettled(); });
 
-    // One blit draws the whole pile, however many grains it holds.
+    // One blit draws the whole pile
     QPainter widgetPainter(this);
     widgetPainter.drawPixmap(0, 0, settledLayer);
 
-    // Falling grains move every frame, so they are redrawn on top instead.
+    // Falling grains move every frame
     for (const Ball& particle : particles)
     {
         particle.draw(widgetPainter);
     }
+
+    widgetPainter.setBrush((Qt::blue));
+    widgetPainter.drawRect(cursorPos.x * cellSize - 3,
+                           cursorPos.y * cellSize - 3, cellSize + 6,
+                           cellSize + 6);
 }
 
 void MainWindow::updateGame()
@@ -61,7 +72,7 @@ void MainWindow::step()
 {
     if (tickCount++ % spawnInterval == 0)
     {
-        const coordinates spawn{cursorPos.x, 0};
+        const coordinates spawn{cursorPos.x, cursorPos.y};
 
         if (grid.getCell(spawn) == Cell::Empty)
         {
@@ -96,6 +107,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         leftPressed = true;
     if (event->key() == Qt::Key_Right)
         rightPressed = true;
+    if (event->key() == Qt::Key_Down)
+        downPressed = true;
+    if (event->key() == Qt::Key_Up)
+        upPressed = true;
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent* event)
@@ -104,6 +119,10 @@ void MainWindow::keyReleaseEvent(QKeyEvent* event)
         leftPressed = false;
     if (event->key() == Qt::Key_Right)
         rightPressed = false;
+    if (event->key() == Qt::Key_Down)
+        downPressed = false;
+    if (event->key() == Qt::Key_Up)
+        upPressed = false;
 }
 
 void ::MainWindow::moveCursor()
@@ -115,5 +134,13 @@ void ::MainWindow::moveCursor()
     if (rightPressed && cursorPos.x < gridWidth - 1)
     {
         cursorPos.x++;
+    }
+    if (downPressed && cursorPos.y < gridHeight - 1)
+    {
+        cursorPos.y++;
+    }
+    if (upPressed && cursorPos.y > 0)
+    {
+        cursorPos.y--;
     }
 }
