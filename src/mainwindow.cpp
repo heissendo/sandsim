@@ -6,15 +6,11 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), grid(gridWidth, gridHeight)
 {
+    setWindowTitle("sandsim");
     setFixedSize(windowWidth, windowHeight);
 
     settledLayer = QPixmap(windowWidth, windowHeight);
     settledLayer.fill(palette().color(QPalette::Window));
-
-    for (int i = 0; i < gridWidth / 2; i++)
-    {
-        grid.setCell({i, gridHeight / 2}, Cell::Settled);
-    }
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::updateGame);
@@ -28,7 +24,7 @@ void MainWindow::paintEvent(QPaintEvent* event)
     // Stamp newly stopped grains into the offscreen image, not the screen.
     {
         QPainter layerPainter(&settledLayer);
-        for (const Ball& particle : particles)
+        for (const Particle& particle : particles)
         {
             if (particle.isSettled())
             {
@@ -38,14 +34,14 @@ void MainWindow::paintEvent(QPaintEvent* event)
     }
 
     // stop simulating them.
-    std::erase_if(particles, [](const Ball& b) { return b.isSettled(); });
+    std::erase_if(particles, [](const Particle& p) { return p.isSettled(); });
 
     // One blit draws the whole pile
     QPainter widgetPainter(this);
     widgetPainter.drawPixmap(0, 0, settledLayer);
 
     // Falling grains move every frame
-    for (const Ball& particle : particles)
+    for (const Particle& particle : particles)
     {
         particle.draw(widgetPainter);
     }
@@ -81,7 +77,7 @@ void MainWindow::step()
         }
     }
 
-    for (Ball& particle : particles)
+    for (Particle& particle : particles)
     {
         const coordinates from = particle.getCell();
         particle.move(grid, rng);

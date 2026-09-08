@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "ball.h"
 #include "coordinates.h"
 #include "grid.h"
+#include "particle.h"
 #include <QMainWindow>
 #include <QPainter>
 #include <QPixmap>
@@ -25,12 +25,12 @@ class MainWindow : public QMainWindow
         void keyReleaseEvent(QKeyEvent* event) override;
 
     private:
-        QTimer*           timer;
-        std::vector<Ball> particles;
-        std::mt19937      rng{std::random_device{}()};
-        QPixmap           settledLayer;
-        void              moveCursor();
-        void              step();
+        QTimer*               timer;
+        std::vector<Particle> particles;
+        std::mt19937          rng{std::random_device{}()};
+        QPixmap               settledLayer;
+        void                  moveCursor();
+        void                  step();
 
         int         windowHeight  = 600;
         int         windowWidth   = 800;

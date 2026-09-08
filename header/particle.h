@@ -1,14 +1,14 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef PARTICLE_H
+#define PARTICLE_H
 #include "coordinates.h"
 #include "grid.h"
 #include <QPainter>
 #include <random>
 
-class Ball
+class Particle
 {
     public:
-        Ball(coordinates cell);
+        Particle(coordinates cell);
         void        draw(QPainter& painter) const;
         QRectF      getRect() const;
         void        move(const Grid& grid, std::mt19937& rng);
@@ -27,4 +27,4 @@ class Ball
         QColor      color    = Qt::red;
 };
 
-#endif // BALL_H
+#endif // PARTICLE_H

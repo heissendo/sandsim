@@ -1,33 +1,33 @@
-#include "ball.h"
+#include "particle.h"
 #include <iostream>
 
-Ball::Ball(coordinates cell) : cell(cell)
+Particle::Particle(coordinates cell) : cell(cell)
 {
 }
 
-void Ball::draw(QPainter& painter) const
+void Particle::draw(QPainter& painter) const
 {
 
     painter.setBrush((color));
     painter.drawRect(getRect());
 }
 
-QRectF Ball::getRect() const
+QRectF Particle::getRect() const
 {
     return QRectF(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize);
 }
 
-bool Ball::isFree(const Grid& grid, coordinates c) const
+bool Particle::isFree(const Grid& grid, coordinates c) const
 {
     return grid.inBounds(c) && grid.getCell(c) == Cell::Empty;
 }
 
-bool Ball::isSolid(const Grid& grid, coordinates c) const
+bool Particle::isSolid(const Grid& grid, coordinates c) const
 {
     return !grid.inBounds(c) || grid.getCell(c) == Cell::Settled;
 }
 
-void Ball::move(const Grid& grid, std::mt19937& rng)
+void Particle::move(const Grid& grid, std::mt19937& rng)
 {
     if (settled)
     {
@@ -66,17 +66,17 @@ void Ball::move(const Grid& grid, std::mt19937& rng)
     }
 }
 
-coordinates Ball::getCell() const
+coordinates Particle::getCell() const
 {
     return cell;
 }
 
-bool Ball::isSettled() const
+bool Particle::isSettled() const
 {
     return settled;
 }
 
-void Ball::setColor(int particlesCount)
+void Particle::setColor(int particlesCount)
 {
     int r = cell.x;
     (r > 255) ? r = 255 : r = cell.x;
@@ -88,7 +88,7 @@ void Ball::setColor(int particlesCount)
     colorSet = true;
 }
 
-bool Ball::isColorSet() const
+bool Particle::isColorSet() const
 {
     return colorSet;
 }
